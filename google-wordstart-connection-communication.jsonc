@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://2msp.online/thamini/wordstart/health",
+    "method": "GET",
+    "response": {
+      "uid": "{{parameters.API_KEY}}",
+      "metadata": {
+        "type": "text",
+        "value": "Google Word Start API"
+      },
+      "data": {
+        "apiKey": "{{parameters.API_KEY}}",
+        "customerId": "{{parameters.CUSTOMER_ID}}"
+      },
+      "error": {
+        "type": "ConnectionError",
+        "message": "[{{statusCode}}] Ошибка подключения: {{body.error || 'Проверьте правильность API ключа и Customer ID'}}"
+      }
+    },
+    "log": {
+      "sanitize": [
+        "request.headers.Authorization"
+      ]
+    }
+  }
+]
+

@@ -1,0 +1,51 @@
+[
+  {
+    "name": "keywords",
+    "type": "array",
+    "label": "🔍 Найденные ключевые слова",
+    "spec": {
+      "type": "object",
+      "properties": {
+        "keyword": {
+          "type": "text",
+          "label": "Ключевое слово"
+        },
+        "avg_monthly_searches": {
+          "type": "number",
+          "label": "Средние запросы в месяц"
+        },
+        "competition": {
+          "type": "text",
+          "label": "Конкуренция"
+        },
+        "competition_index": {
+          "type": "number",
+          "label": "Индекс конкуренции"
+        },
+        "low_top_of_page_bid": {
+          "type": "number",
+          "label": "Мин. ставка (₽)"
+        },
+        "high_top_of_page_bid": {
+          "type": "number",
+          "label": "Макс. ставка (₽)"
+        },
+        "relevance": {
+          "type": "number",
+          "label": "Релевантность (%)"
+        }
+      }
+    }
+  },
+  {
+    "name": "total_count",
+    "type": "number",
+    "label": "📊 Всего найдено"
+  },
+  {
+    "name": "timestamp",
+    "type": "text",
+    "label": "🕐 Время запроса"
+  }
+]
+

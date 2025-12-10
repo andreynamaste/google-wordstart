@@ -1,0 +1,36 @@
+[
+  {
+    "url": "https://2msp.online/thamini/wordstart/api/keywords",
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer {{connection.API_KEY}}",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "queries": "{{parameters.queries}}",
+      "language": "{{parameters.language}}",
+      "location": "{{if(parameters.location, parameters.location, ['2840'])}}"
+    },
+    "response": {
+      "output": {
+        "keywords": "{{body.keywords}}",
+        "total_count": "{{body.total_count}}",
+        "timestamp": "{{body.timestamp}}"
+      },
+      "error": {
+        "type": "DataError",
+        "message": "[{{statusCode}}] {{body.error || 'Ошибка при получении ключевых слов'}}"
+      }
+    },
+    "log": {
+      "sanitize": [
+        "request.headers.Authorization"
+      ],
+      "output": [
+        "body.total_count",
+        "body.keywords[].keyword"
+      ]
+    }
+  }
+]
+

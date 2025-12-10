@@ -1,0 +1,17 @@
+[
+  {
+    "name": "API_KEY",
+    "type": "text",
+    "label": "🔑 Google Ads API Key",
+    "required": true,
+    "help": "Получите ваш API ключ в Google Ads API Console"
+  },
+  {
+    "name": "CUSTOMER_ID",
+    "type": "text",
+    "label": "🆔 Customer ID",
+    "required": true,
+    "help": "ID вашего аккаунта Google Ads (без дефисов)"
+  }
+]
+

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Word Start - Планировщик ключевых слов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hint {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .results-header h2 {
+            color: #333;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-export {
+            background: #4caf50;
+            padding: 10px 20px;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .btn-export:hover {
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .keywords-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .keywords-table th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .keywords-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .keywords-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .competition-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .competition-low {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .competition-medium {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+
+        .competition-high {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c62828;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+
+            .keywords-table {
+                font-size: 0.9em;
+            }
+
+            .keywords-table th,
+            .keywords-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Google Word Start</h1>
+            <p>Планировщик ключевых слов на основе Google Keyword Planner</p>
+        </div>
+
+        <div class="content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="queries">📝 Введите поисковые запросы (по одному на строку):</label>
+                    <textarea id="queries" rows="5" placeholder="например:&#10;купить телефон&#10;ноутбук цена&#10;онлайн магазин"></textarea>
+                    <div class="hint">Введите ключевые слова или фразы, по которым хотите получить статистику</div>
+                </div>
+
+                <div class="filters">
+                    <div class="input-group">
+                        <label for="language">🌍 Язык:</label>
+                        <select id="language">
+                            <option value="ru">Русский</option>
+                            <option value="en">English</option>
+                            <option value="uk">Українська</option>
+                            <option value="be">Беларуская</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="location">📍 Локация:</label>
+                        <select id="location">
+                            <option value="2840">Россия</option>
+                            <option value="2336">Украина</option>
+                            <option value="2686">Беларусь</option>
+                            <option value="2826">Казахстан</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn" id="searchBtn" onclick="searchKeywords()">
+                    🔍 Найти ключевые слова
+                </button>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Поиск ключевых слов...</p>
+            </div>
+
+            <div id="errorContainer"></div>
+
+            <div class="results" id="results">
+                <div class="results-header">
+                    <h2>📊 Результаты поиска</h2>
+                    <div class="export-buttons">
+                        <button class="btn btn-export" onclick="exportKeywords('json')">📥 JSON</button>
+                        <button class="btn btn-export" onclick="exportKeywords('csv')">📥 CSV</button>
+                        <button class="btn btn-export" onclick="exportKeywords('txt')">📥 TXT</button>
+                    </div>
+                </div>
+
+                <div class="stats" id="stats"></div>
+
+                <div style="overflow-x: auto;">
+                    <table class="keywords-table">
+                        <thead>
+                            <tr>
+                                <th>Ключевое слово</th>
+                                <th>Запросов/месяц</th>
+                                <th>Конкуренция</th>
+                                <th>Индекс</th>
+                                <th>Мин. ставка</th>
+                                <th>Макс. ставка</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keywordsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://2msp.online/thamini/wordstart/api';
+        let currentKeywords = [];
+
+        async function searchKeywords() {
+            const queriesText = document.getElementById('queries').value.trim();
+            if (!queriesText) {
+                showError('Пожалуйста, введите хотя бы один поисковый запрос');
+                return;
+            }
+
+            const queries = queriesText.split('\n').filter(q => q.trim());
+            const language = document.getElementById('language').value;
+            const location = [document.getElementById('location').value];
+
+            // Показать загрузку
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('errorContainer').innerHTML = '';
+            document.getElementById('searchBtn').disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/keywords`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        queries: queries,
+                        language: language,
+                        location: location
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                currentKeywords = data.keywords || [];
+                displayResults(currentKeywords);
+
+            } catch (error) {
+                showError('Ошибка при получении данных: ' + error.message);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('searchBtn').disabled = false;
+            }
+        }
+
+        function displayResults(keywords) {
+            if (keywords.length === 0) {
+                showError('Ключевые слова не найдены');
+                return;
+            }
+
+            // Статистика
+            const stats = calculateStats(keywords);
+            displayStats(stats);
+
+            // Таблица
+            const tbody = document.getElementById('keywordsTableBody');
+            tbody.innerHTML = '';
+
+            keywords.forEach(kw => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${escapeHtml(kw.keyword)}</strong></td>
+                    <td>${formatNumber(kw.avg_monthly_searches)}</td>
+                    <td><span class="competition-badge competition-${kw.competition.toLowerCase()}">${kw.competition}</span></td>
+                    <td>${kw.competition_index}</td>
+                    <td>${kw.low_top_of_page_bid} ₽</td>
+                    <td>${kw.high_top_of_page_bid} ₽</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('results').classList.add('active');
+        }
+
+        function calculateStats(keywords) {
+            const total = keywords.length;
+            const totalSearches = keywords.reduce((sum, kw) => sum + (kw.avg_monthly_searches || 0), 0);
+            const avgSearches = Math.round(totalSearches / total);
+            const lowCompetition = keywords.filter(kw => kw.competition === 'LOW').length;
+            const highCompetition = keywords.filter(kw => kw.competition === 'HIGH').length;
+
+            return {
+                total,
+                totalSearches,
+                avgSearches,
+                lowCompetition,
+                highCompetition
+            };
+        }
+
+        function displayStats(stats) {
+            const statsContainer = document.getElementById('stats');
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <h3>${stats.total}</h3>
+                    <p>Всего ключевых слов</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${formatNumber(stats.totalSearches)}</h3>
+                    <p>Всего запросов/месяц</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${formatNumber(stats.avgSearches)}</h3>
+                    <p>Среднее запросов</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.lowCompetition}</h3>
+                    <p>Низкая конкуренция</p>
+                </div>
+            `;
+        }
+
+        function exportKeywords(format) {
+            if (currentKeywords.length === 0) {
+                showError('Нет данных для экспорта');
+                return;
+            }
+
+            fetch(`${API_BASE_URL}/export`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    keywords: currentKeywords,
+                    format: format
+                })
+            })
+            .then(response => {
+                if (format === 'json') {
+                    return response.json().then(data => JSON.stringify(data, null, 2));
+                } else {
+                    return response.text();
+                }
+            })
+            .then(data => {
+                const blob = new Blob([data], {
+                    type: format === 'csv' ? 'text/csv' : format === 'txt' ? 'text/plain' : 'application/json'
+                });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `google-keywords.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                showError('Ошибка при экспорте: ' + error.message);
+            });
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `<div class="error">${escapeHtml(message)}</div>`;
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('ru-RU').format(num);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Поиск по Ctrl+Enter
+        document.getElementById('queries').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                searchKeywords();
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,9 @@
+{
+  "baseUrl": "https://2msp.online/thamini/wordstart",
+  "log": {
+    "sanitize": [
+      "request.headers.Authorization"
+    ]
+  }
+}
+
